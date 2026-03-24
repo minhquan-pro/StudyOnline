@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useCart } from '../context/CartContext';
 
 export default function CourseCard({ course }) {
   const formatPrice = (price) => price.toLocaleString('vi-VN') + 'd';
+  const { addToCart, isInCart, isRegistered } = useCart();
 
   return (
     <motion.div
@@ -54,7 +56,7 @@ export default function CourseCard({ course }) {
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           <div>
             <span className="text-lg font-bold text-primary">{formatPrice(course.price)}</span>
             <span className="text-sm text-gray-400 line-through ml-2">{formatPrice(course.originalPrice)}</span>
@@ -65,6 +67,33 @@ export default function CourseCard({ course }) {
           >
             Xem chi tiet
           </Link>
+        </div>
+        <div className="flex gap-2">
+          {isRegistered(course.id) ? (
+            <button disabled className="flex-1 py-2 bg-green-500 text-white text-sm font-semibold rounded-lg cursor-default">
+              Da dang ky
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => addToCart(course)}
+                disabled={isInCart(course.id)}
+                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition-all ${
+                  isInCart(course.id)
+                    ? 'bg-gray-100 text-gray-400 cursor-default'
+                    : 'bg-primary/10 text-primary hover:bg-primary hover:text-white'
+                }`}
+              >
+                {isInCart(course.id) ? 'Da them' : 'Them vao gio'}
+              </button>
+              <Link
+                to={`/courses/${course.id}`}
+                className="flex-1 py-2 text-center text-sm font-semibold bg-gradient-to-r from-secondary to-orange-500 text-white rounded-lg hover:shadow-md transition-all"
+              >
+                Dang ky ngay
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </motion.div>

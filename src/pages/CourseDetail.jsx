@@ -1,9 +1,12 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { courses } from '../data/courses';
+import { useCart } from '../context/CartContext';
 
 export default function CourseDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { addToCart, registerCourse, isInCart, isRegistered } = useCart();
   const course = courses.find((c) => c.id === Number(id));
 
   if (!course) {
@@ -126,12 +129,33 @@ export default function CourseDetail() {
                 Giam {discount}%
               </span>
 
-              <button className="w-full py-3.5 bg-gradient-to-r from-secondary to-orange-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-secondary/30 transition-all mb-3">
-                Dang ky ngay
-              </button>
-              <button className="w-full py-3.5 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-all">
-                Them vao gio hang
-              </button>
+              {isRegistered(course.id) ? (
+                <button disabled className="w-full py-3.5 bg-green-500 text-white font-bold rounded-xl mb-3 cursor-default">
+                  Da dang ky
+                </button>
+              ) : (
+                <button
+                  onClick={() => { registerCourse(course); alert('Dang ky khoa hoc thanh cong! (Demo)'); }}
+                  className="w-full py-3.5 bg-gradient-to-r from-secondary to-orange-500 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-secondary/30 transition-all mb-3"
+                >
+                  Dang ky ngay
+                </button>
+              )}
+              {isRegistered(course.id) ? null : isInCart(course.id) ? (
+                <button
+                  onClick={() => navigate('/cart')}
+                  className="w-full py-3.5 border-2 border-green-500 text-green-600 font-bold rounded-xl hover:bg-green-50 transition-all"
+                >
+                  Xem gio hang
+                </button>
+              ) : (
+                <button
+                  onClick={() => addToCart(course)}
+                  className="w-full py-3.5 border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-all"
+                >
+                  Them vao gio hang
+                </button>
+              )}
 
               <div className="mt-6 space-y-3">
                 {[
